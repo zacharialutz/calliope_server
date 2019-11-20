@@ -5,7 +5,7 @@ const app = require('../src/app');
 
 const { makeStoryArray } = require('./stories.fixtures');
 
-describe('Story Endpoints', function() {
+describe('Story Endpoints', () => {
 	let db;
 
 	before('make knex instance', () => {

@@ -11,8 +11,7 @@ const zippedStory = story => ({
 	content: story.content
 });
 
-storyRouter
-	.route('/')
+storyRouter.route('/')
 	.get((req, res, next) => {
 		StoryService.getAllStories(
 			req.app.get('db')

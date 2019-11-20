@@ -8,6 +8,7 @@ const { NODE_ENV } = require('./config');
 const { CLIENT_ORIGIN } = require('./config');
 
 const storyRouter = require('./api/story-router');
+const genRouter = require('./generator/gen-router');
 const app = express();
 
 const morganOption = (NODE_ENV === 'production')
@@ -23,6 +24,7 @@ app.use(
 );
 
 app.use('/api/stories', storyRouter);
+app.use('/api/generator', genRouter);
 
 app.get('/', (req, res) => {
 	res.send('Hello beautiful!');
