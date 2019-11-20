@@ -5,10 +5,11 @@ const { generate } = require('./generator');
 const genRouter = express.Router();
 const jsonParser = express.json();
 
+// Runs generator with sent queries
 genRouter.route('/')
 	.get((req, res) => {
-		const arr = generate();
-		// const arr = ['test', 'TEST'];
+		const num = req.query.num;
+		const arr = generate(num);
 		res.json(arr)
 		// .catch(next)
 	})

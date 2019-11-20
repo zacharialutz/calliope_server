@@ -19,12 +19,11 @@ function roll(num) {
 // Returns a random item from demo array
 function randomDemo() {
 	const pick = roll(demoStories.length);
-	return demoStories[pick];
+	return demoStories[pick - 1];
 }
 
 // Returns array of stories
-function generate() {
-	const num = 3;
+function generate(num = 3) {
 	let result = [];
 	for (let i = 0; i < num; i++) {
 		result.push(randomDemo());
