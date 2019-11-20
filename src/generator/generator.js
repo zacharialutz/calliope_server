@@ -27,11 +27,9 @@ function generate() {
 	const num = 3;
 	let result = [];
 	for (let i = 0; i < num; i++) {
-		res.push({
-			content: randomDemo()
-		});
+		result.push(randomDemo());
 	};
-	return ['test', 'TEST'];
+	return result;
 }
 
 module.exports = { generate };

@@ -8,7 +8,7 @@ const jsonParser = express.json();
 genRouter.route('/')
 	.get((req, res) => {
 		const arr = generate();
-		// const arr = [];
+		// const arr = ['test', 'TEST'];
 		res.json(arr)
 		// .catch(next)
 	})
