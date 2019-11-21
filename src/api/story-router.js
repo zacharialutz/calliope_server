@@ -8,7 +8,8 @@ const jsonParser = express.json();
 const zippedStory = story => ({
 	id: story.id,
 	title: story.title,
-	content: story.content
+	content: story.content,
+	author: story.author
 });
 
 storyRouter.route('/')

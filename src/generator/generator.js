@@ -1,3 +1,5 @@
+const WordService = require('./word-service')
+
 const demoStories = [
 	'The quick brown fox jumped over the lazy dog.',
 	'This is the best of stories. This is the worst of stories.',
@@ -16,6 +18,14 @@ function roll(num) {
 	return Math.floor( (Math.random() * num) ) + 1;
 }
 
+function template(knex) {
+	const person1 = WordService.getNoun(
+		knex, 'animate'
+	);
+	let story = `This story is about a ${person1}.`;
+	return story;
+}
+
 // Returns a random item from demo array
 function randomDemo() {
 	const pick = roll(demoStories.length);
@@ -23,11 +33,12 @@ function randomDemo() {
 }
 
 // Returns array of stories
-function generate(num = 3) {
+async function generate(knex, num = 1) {
 	let result = [];
 	for (let i = 0; i < num; i++) {
 		result.push(randomDemo());
 	};
+	// console.log(result);
 	return result;
 }
 

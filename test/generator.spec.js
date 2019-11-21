@@ -3,23 +3,34 @@ const { expect } = require('chai');
 const knex = require('knex');
 const app = require('../src/app');
 
-describe('Generator Endpoint', () => {
-	it('responds with 200 and an array', () => {
-		return supertest(app)
-			.get('/api/generator')
-			.expect(200)
-			.then(res => 
-				expect(res.body).to.be.an('array')
-			);
-	})
+const WordService = require('../src/generator/word-service')
 
-	it('response array is length of given number', () => {
+describe('Generator Endpoint', () => {
+	it('responds with 200 and an array of given number', () => {
 		const testNum = 7;
 		return supertest(app)
 			.get(`/api/generator?num=${testNum}`)
 			.expect(200)
-			.then(res =>
+			.then(res => {
+				expect(res.body).to.be.an('array');
 				expect(res.body.length).to.eql(7)
-			);
+			});
+	})
+})
+
+describe('WordService', () => {
+	before('make knex instance', () => {
+		db = knex({
+			client: 'pg',
+			connection: process.env.DB_URL
+		})
+		app.set('db', db)
+	})
+
+	after('disconnect from db', () => db.destroy())
+
+	it('getNoun returns a single string', async () => {
+		// console.log(WordService.getNoun(db, 'animate'))
+		expect(await WordService.getNoun(db, 'animate')).to.be.a('string')
 	})
 })
