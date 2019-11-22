@@ -18,11 +18,21 @@ function roll(num) {
 	return Math.floor( (Math.random() * num) ) + 1;
 }
 
-function template(knex) {
-	const person1 = WordService.getNoun(
-		knex, 'animate'
-	);
-	let story = `This story is about a ${person1}.`;
+// Turns 'a' into 'an' if input starts with a vowel
+function a (str) {
+	const vowels = ['a','e','i','o','u'];
+	if (vowels.includes(str.charAt(0))) return `an ${str}`;
+	else return `a ${str}`;
+}
+
+async function template(db) {
+	let person1;
+	await WordService.getNoun(
+		db, false, 'animate'
+	)
+	.then(val => person1 = val);
+	
+	let story = `This story is about ${a(person1)}.`;
 	return story;
 }
 
@@ -33,13 +43,13 @@ function randomDemo() {
 }
 
 // Returns array of stories
-async function generate(knex, num = 1) {
-	let result = [];
+async function generate(db, num = 1) {
+	let list = [];
 	for (let i = 0; i < num; i++) {
-		result.push(randomDemo());
-	};
-	// console.log(result);
-	return result;
+		await template(db).then(story => list.push(story));
+	}
+	console.log(list);
+	return list;
 }
 
 module.exports = { generate };

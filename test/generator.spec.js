@@ -13,7 +13,7 @@ describe('Generator Endpoint', () => {
 			.expect(200)
 			.then(res => {
 				expect(res.body).to.be.an('array');
-				expect(res.body.length).to.eql(7)
+				expect(res.body.length).to.eql(7);
 			});
 	})
 })
@@ -30,7 +30,7 @@ describe('WordService', () => {
 	after('disconnect from db', () => db.destroy())
 
 	it('getNoun returns a single string', async () => {
-		// console.log(WordService.getNoun(db, 'animate'))
-		expect(await WordService.getNoun(db, 'animate')).to.be.a('string')
+		expect(await WordService.getNoun(db, true, 'animate')).to.be.a('string');
+		// console.log(await WordService.getNoun(db, true, 'animate'));
 	})
 })
