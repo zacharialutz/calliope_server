@@ -26,24 +26,65 @@ function a (str) {
 }
 
 async function template(db) {
+	// Generate genre
+	let genre;
+	await WordService.getNoun(
+		db, 'singular', 'genre'
+	)
+		.then(val => genre = val);
+	
+	// Generate protagonist
 	let person1;
-		await WordService.getAdjective(
-			db, 'animate'
-		)
-		.then(val => person1 = val);
+		if (roll(3) === 1) {
+			await WordService.getAdjective(
+				db, 'general'
+			)
+				.then(val => person1 = val);
+		}
+		else {
+			await WordService.getAdjective(
+				db, 'animate'
+			)
+				.then(val => person1 = val);
+		}
 		await WordService.getNoun(
 			db, 'singular', 'animate'
 		)
-		.then(val => person1 += ` ${val}`);
-		// console.log(person1);
+			.then(val => person1 += ` ${val}`);
 
-	let genre;
+	let location;
+	let locationPrep = 'in';
+		if (roll(3) === 1) {
+			await WordService.getSetting(
+				db, 'location'
+			)
+				.then(val => {
+					location = val[0];
+					if (val[1]) locationPrep = val[1];
+				});
+		}
+		else {
+			await WordService.getAdjective(
+				db, 'place'
+			)
+				.then(val => location = val);
+			await WordService.getSetting(
+				db, 'setting'
+			)
+				.then(val => {
+					location += ` ${val[0]}`;
+					location = a(location);
+					if (val[1]) locationPrep = val[1];
+				});
+		}
+
+	let period;
 		await WordService.getNoun(
-			db, 'singular', 'genre'
+			db, 'singular', 'period'
 		)
-		.then(val => genre = val);
-	
-	let story = `This ${genre} is about ${a(person1)}.`;
+		.then(val => period = val);
+	// ----------------------------------------------------
+	let story = `This ${genre} is about ${a(person1)}. It takes place ${locationPrep} ${location} during ${period}.`;
 	// console.log(story);
 	return story;
 }
