@@ -43,14 +43,41 @@ async function makeAdj(db, cat) {
 	return adj;
 }
 
+// Generates a material
+async function makeMaterial(db) {
+	let material;
+	await WordService.getNoun(
+		db, 'singular', 'substance'
+	)
+		.then(val => material = val);
+	return material;
+}
+
+// Generates a group - obj is either 'group' or 'container'
+async function makeGroup(db, obj) {
+	let group;
+	await WordService.getNoun(
+		db, 'singular', obj
+	)
+		.then(val => group = val);
+	return group;
+}
+
 // Generates a character with an adjective
 async function makeCharacter(db) {
-	let character;
-	if (roll(3) === 1) character = await makeAdj(db, 'general');
-	else character = await makeAdj(db, 'animate');
+	let character = '';
+	let multi = 'singular';
+
+	if (roll(3) === 1) {
+		multi = 'plural';
+		character = `${await makeGroup(db, 'group')} of `;
+	}
+
+	if (roll(3) === 1) character += await makeAdj(db, 'general');
+	else character += await makeAdj(db, 'animate');
 
 	await WordService.getNoun(
-		db, 'singular', 'animate'
+		db, multi, 'animate'
 	)
 		.then(val => character += ` ${val}`);
 	character = a(character);
@@ -59,14 +86,34 @@ async function makeCharacter(db) {
 
 // Generates an object with an adjective
 async function makeObject(db) {
-	let object;
-	if (roll(3) === 1) object = await makeAdj(db, 'general');
-	else object = await makeAdj(db, 'object');
+	let object = '';
+	let multi = 'singular';
+
+	if (roll(3) === 1) {
+		multi = 'plural';
+		object = `${await makeGroup(db, 'container')} of `;
+	}
+
+	if (roll(3) === 1) object += await makeAdj(db, 'general');
+	else object += await makeAdj(db, 'object');
 
 	await WordService.getNoun(
-		db, 'singular', 'object'
+		db, multi, 'object'
 	)
 		.then(val => object += ` ${val}`);
+
+	const part = getOne([
+		'made of solid',
+		'made entirely of',
+		'covered in',
+		'decorated with',
+		'made of',
+		'partly made from',
+		'appearing to be made of',
+		'fashioned from'
+	]);
+		if (roll(3) === 1) object += ` ${part} ${await makeMaterial(db)}`;
+	
 	object = a(object);
 	return object;
 }
@@ -138,7 +185,7 @@ async function makeTwist(db) {
 		'disappears',
 		'appears',
 		'gets lost',
-		'shows up',
+		'turns up',
 		'is revealed to be something else entirely',
 		'becomes involved',
 		'is removed from the situation',
@@ -149,7 +196,9 @@ async function makeTwist(db) {
 		'is no longer involved',
 		'is no longer necessary',
 		'becomes critically important',
-		'is no longer important'
+		'is no longer important',
+		'is nowhere to be found',
+		'goes missing'
 	]);
 
 	return `${part1} ${subject} ${part2}.`
@@ -162,9 +211,37 @@ async function template(db) {
 	const { setting, settingPrep } = await makeSetting(db);
 	const period = await makePeriod(db);
 	const twist = await makeTwist(db);
+	let char2 = '';
+		if (roll(3) === 1) char2 = ` and ${await makeCharacter(db)}`;
 
-	// Fills in template slots to create final story
-	return `This ${genre} is about ${char1}. It takes place ${settingPrep} ${setting} during ${period}. ${twist}`;
+	const isAbout = getOne([
+		'is about',
+		'features',
+		'involves',
+		'is centered on',
+		'revolves around',
+		'focuses on',
+		'depicts',
+		'portrays',
+		'stars'
+	]);
+	const takesPlace = getOne([
+		'It takes place',
+		'It starts',
+		'It opens',
+		'They live',
+		'They find themselves',
+		'They work',
+		'It begins',
+		'Everything happens',
+		'It opens',
+		'It ends',
+		'The climax happens',
+		'They end up'
+	])
+
+	// Fills in template to create story
+	return `This ${genre} ${isAbout} ${char1}${char2}. ${takesPlace} ${settingPrep} ${setting} during ${period}. ${twist}`;
 }
 
 // Returns array of stories
