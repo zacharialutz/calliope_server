@@ -28,6 +28,7 @@ const WordService = {
 			.where('category', cat)
 			.then(arr => randomOne(arr, label));
 	},
+	
 	// Queries DB for type of adjectives and returns a random one
 	// knex: db connection
 	// cat: category

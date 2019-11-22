@@ -27,19 +27,24 @@ function a (str) {
 
 async function template(db) {
 	let person1;
-	await WordService.getAdjective(
-		db, 'animate'
-	)
-	.then(val => person1 = val);
-	console.log(person1);
-	await WordService.getNoun(
-		db, 'singular', 'animate'
-	)
-	.then(val => person1 += ` ${val}`);
-	console.log(person1);
+		await WordService.getAdjective(
+			db, 'animate'
+		)
+		.then(val => person1 = val);
+		await WordService.getNoun(
+			db, 'singular', 'animate'
+		)
+		.then(val => person1 += ` ${val}`);
+		// console.log(person1);
+
+	let genre;
+		await WordService.getNoun(
+			db, 'singular', 'genre'
+		)
+		.then(val => genre = val);
 	
-	let story = `This story is about ${a(person1)}.`;
-	console.log(story);
+	let story = `This ${genre} is about ${a(person1)}.`;
+	// console.log(story);
 	return story;
 }
 
