@@ -5,6 +5,12 @@ function roll(num) {
 	return Math.floor( (Math.random() * num) ) + 1;
 }
 
+// Picks a random item from an array
+function getOne(arr) {
+	const roll = Math.floor( (Math.random() * arr.length) );
+	return arr[roll];
+}
+
 // Turns 'a' into 'an' if input starts with a vowel
 function a (str) {
 	const vowels = ['a','e','i','o','u'];
@@ -47,7 +53,22 @@ async function makeCharacter(db) {
 		db, 'singular', 'animate'
 	)
 		.then(val => character += ` ${val}`);
+	character = a(character);
 	return character;
+}
+
+// Generates an object with an adjective
+async function makeObject(db) {
+	let object;
+	if (roll(3) === 1) object = await makeAdj(db, 'general');
+	else object = await makeAdj(db, 'object');
+
+	await WordService.getNoun(
+		db, 'singular', 'object'
+	)
+		.then(val => object += ` ${val}`);
+	object = a(object);
+	return object;
 }
 
 // Generates either a named location or a setting with adjective
@@ -89,17 +110,61 @@ async function makePeriod(db) {
 	return period;
 }
 
-// Generates items to insert into modular template --------------!
+// Generates a plot twist
+async function makeTwist(db) {
+	const part1 = getOne([
+		'Everything changes when',
+		'The plot thickens when',
+		'Suddenly,',
+		'The plot twist occurs when',
+		'Eventually,',
+		'Everything falls apart when',
+		'Everything comes together when',
+		'All of a sudden,',
+		'At some point',
+		'Surprisingly,',
+		'Things get exciting when',
+		'Trouble begins when',
+		'Everything calms down when'
+	]);
+
+	let subject;
+	if (roll(2) === 1) subject = await makeCharacter(db);
+	else subject = await makeObject(db);
+
+	const part2 = getOne([
+		'is found',
+		'is rediscovered',
+		'disappears',
+		'appears',
+		'gets lost',
+		'shows up',
+		'is revealed to be something else entirely',
+		'becomes involved',
+		'is removed from the situation',
+		'becomes a problem',
+		'is no longer a problem',
+		'becomes the center of attention',
+		'becomes necessary',
+		'is no longer involved',
+		'is no longer necessary',
+		'becomes critically important',
+		'is no longer important'
+	]);
+
+	return `${part1} ${subject} ${part2}.`
+}
+
+// Generates items to insert into modular template
 async function template(db) {
 	const genre = await makeGenre(db);
 	const char1 = await makeCharacter(db);
 	const { setting, settingPrep } = await makeSetting(db);
 	const period = await makePeriod(db);
+	const twist = await makeTwist(db);
 
 	// Fills in template slots to create final story
-	let story = `This ${genre} is about ${a(char1)}. It takes place ${settingPrep} ${setting} during ${period}.`;
-	// console.log(story);
-	return story;
+	return `This ${genre} is about ${char1}. It takes place ${settingPrep} ${setting} during ${period}. ${twist}`;
 }
 
 // Returns array of stories
