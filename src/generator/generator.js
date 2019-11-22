@@ -12,44 +12,49 @@ function a (str) {
 	else return `a ${str}`;
 }
 
-// Generates items to insert into modular template ----------------
-async function template(db) {
-	// Generate genre
+// Generates a genre
+async function makeGenre(db) {
 	let genre;
 	await WordService.getNoun(
 		db, 'singular', 'genre'
 	)
 		.then(val => genre = val);
-	
-	// Generate protagonist
-	let person1;
-		if (roll(3) === 1) {
-			await WordService.getAdjective(
-				db, 'general'
-			)
-				.then(val => person1 = val);
-		}
-		else {
-			await WordService.getAdjective(
-				db, 'animate'
-			)
-				.then(val => person1 = val);
-		}
-		await WordService.getNoun(
-			db, 'singular', 'animate'
-		)
-			.then(val => person1 += ` ${val}`);
+	return genre;
+}
 
-	// Generate location/setting
-	let location;
-	let locationPrep = 'in';
+// Generates a character with an adjective
+async function makeCharacter(db) {
+	let character;
+	if (roll(3) === 1) {
+		await WordService.getAdjective(
+			db, 'general'
+		)
+			.then(val => character = val);
+	}
+	else {
+		await WordService.getAdjective(
+			db, 'animate'
+		)
+			.then(val => character = val);
+	}
+	await WordService.getNoun(
+		db, 'singular', 'animate'
+	)
+		.then(val => character += ` ${val}`);
+	return character;
+}
+
+// Generates either a named location or a setting with adjective
+async function makeSetting(db) {
+	let setting;
+	let settingPrep = 'in';
 		if (roll(3) === 1) {
 			await WordService.getSetting(
 				db, 'location'
 			)
 				.then(val => {
-					location = val[0];
-					if (val[1]) locationPrep = val[1];
+					setting = val[0];
+					if (val[1]) settingPrep = val[1];
 				});
 		}
 		else {
@@ -57,33 +62,45 @@ async function template(db) {
 				await WordService.getAdjective(
 					db, 'general'
 				)
-					.then(val => location = val);
+					.then(val => setting = val);
 			}
 			else {
 				await WordService.getAdjective(
 					db, 'place'
 				)
-					.then(val => location = val);
+					.then(val => setting = val);
 			}
 			await WordService.getSetting(
 				db, 'setting'
 			)
 				.then(val => {
-					location += ` ${val[0]}`;
-					location = a(location);
-					if (val[1]) locationPrep = val[1];
+					setting += ` ${val[0]}`;
+					setting = a(setting);
+					if (val[1]) settingPrep = val[1];
 				});
 		}
+	return { setting, settingPrep };
+}
 
-	// Generate time setting
+// Generates a time setting
+async function makePeriod(db) {
 	let period;
-		await WordService.getNoun(
-			db, 'singular', 'period'
-		)
-		.then(val => period = val);
+	await WordService.getNoun(
+		db, 'singular', 'period'
+	)
+	.then(val => period = val);
+	return period;
+}
+
+// Generates items to insert into modular template --------------!
+async function template(db) {
+	const genre = await makeGenre(db);
+	const char1 = await makeCharacter(db);
+	const { setting, settingPrep } = await makeSetting(db);
+	const period = await makePeriod(db);
 
 	// Fills in template slots to create final story
-	let story = `This ${genre} is about ${a(person1)}. It takes place ${locationPrep} ${location} during ${period}.`;
+	let story = `This ${genre} is about ${a(char1)}. It takes place ${settingPrep} ${setting} during ${period}.`;
 	// console.log(story);
 	return story;
 }
