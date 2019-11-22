@@ -30,7 +30,7 @@ describe('WordService', () => {
 	after('disconnect from db', () => db.destroy())
 
 	it('getNoun returns a single string', async () => {
-		expect(await WordService.getNoun(db, true, 'animate')).to.be.a('string');
+		expect(await WordService.getNoun(db, 'singular', 'animate')).to.be.a('string');
 		// console.log(await WordService.getNoun(db, true, 'animate'));
 	})
 })

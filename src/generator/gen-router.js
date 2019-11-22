@@ -13,7 +13,7 @@ genRouter.route('/')
 			req.query.num
 		)
 		.then(stories => {
-			// console.log(stories);
+			console.log(stories);
 			res.json(stories);
 		})
 		.catch(next)
