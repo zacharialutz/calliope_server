@@ -1,6 +1,8 @@
 -- psql -U zacharialutz -d wordbank -f ./seeds/seed.verbs.sql
 -- last pull from master: 11-20-19
 
+DELETE FROM verbs; -- clear table for re-seeding
+
 INSERT INTO verbs (infinitive, present, past, gerund)
 VALUES
     ('belch','belches','belched','blelching'),

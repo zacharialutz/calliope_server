@@ -59,6 +59,16 @@ const WordService = {
 			.from('adjectives')
 			.where('category', cat)
 			.then(arr => randomOne(arr, 'adj'));
+	},
+
+	// Queries DB for adjective modifier
+	// knex: db connection
+	getModifier(knex) {
+		return knex
+			.select('*')
+			.from('adjectives')
+			.where('category', 'modifier')
+			.then(arr => randomOne(arr, 'adj'));
 	}
 };
 

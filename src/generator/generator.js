@@ -22,21 +22,27 @@ async function makeGenre(db) {
 	return genre;
 }
 
+// Generates an adjective
+async function makeAdj(db, cat) {
+	let adj = '';
+	if (roll(3) === 1) await WordService.getModifier(
+		db, cat
+	)
+		.then(val => adj = `${val} `);
+
+	await WordService.getAdjective(
+		db, cat
+	)
+		.then(val => adj += val);
+	return adj;
+}
+
 // Generates a character with an adjective
 async function makeCharacter(db) {
 	let character;
-	if (roll(3) === 1) {
-		await WordService.getAdjective(
-			db, 'general'
-		)
-			.then(val => character = val);
-	}
-	else {
-		await WordService.getAdjective(
-			db, 'animate'
-		)
-			.then(val => character = val);
-	}
+	if (roll(3) === 1) character = await makeAdj(db, 'general');
+	else character = await makeAdj(db, 'animate');
+
 	await WordService.getNoun(
 		db, 'singular', 'animate'
 	)
@@ -58,18 +64,9 @@ async function makeSetting(db) {
 				});
 		}
 		else {
-			if (roll(3) === 1) {
-				await WordService.getAdjective(
-					db, 'general'
-				)
-					.then(val => setting = val);
-			}
-			else {
-				await WordService.getAdjective(
-					db, 'place'
-				)
-					.then(val => setting = val);
-			}
+			if (roll(3) === 1) setting = await makeAdj(db, 'general');
+			else setting = await makeAdj(db, 'place');
+
 			await WordService.getSetting(
 				db, 'setting'
 			)
