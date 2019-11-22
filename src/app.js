@@ -1,11 +1,14 @@
-require('dotenv').config()
-const express = require('express')
-const morgan = require('morgan')
-const cors = require('cors')
-const helmet = require('helmet')
-const { NODE_ENV } = require('./config')
+require('dotenv').config();
+const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
+const helmet = require('helmet');
+
+const { NODE_ENV } = require('./config');
 const { CLIENT_ORIGIN } = require('./config');
 
+const storyRouter = require('./api/story-router');
+const genRouter = require('./generator/gen-router');
 const app = express();
 
 const morganOption = (NODE_ENV === 'production')
@@ -19,6 +22,9 @@ app.use(
         origin: CLIENT_ORIGIN
     })
 );
+
+app.use('/api/stories', storyRouter);
+app.use('/api/generator', genRouter);
 
 app.get('/', (req, res) => {
 	res.send('Hello beautiful!');

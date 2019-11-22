@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS nouns;
+DROP TABLE IF EXISTS verbs;
+DROP TABLE IF EXISTS adjectives;
+DROP TABLE IF EXISTS saved_stories;
