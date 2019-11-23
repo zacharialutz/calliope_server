@@ -91,6 +91,13 @@ async function makeObject(db) {
 
 	if (roll(3) === 1) {
 		multi = 'plural';
+		const holds = getOne([
+			'of',
+			'full of',
+			'containing',
+			'stuffed with',
+			'filled with'
+		]);
 		object = `${await makeGroup(db, 'container')} of `;
 	}
 
@@ -171,8 +178,20 @@ async function makeTwist(db) {
 		'At some point',
 		'Surprisingly,',
 		'Things get exciting when',
+		'Things get interesting when',
 		'Trouble begins when',
-		'Everything calms down when'
+		'Everything calms down when',
+		'A solution is found when',
+		'A dillema arises when',
+		'To everyone\' surprise,',
+		'All of a sudden,',
+		'Unexpectedly,',
+		'As one might expect,',
+		'Fortunately,',
+		'Unfortunately,',
+		'Not surprisingly,',
+		'As expected,',
+		'Nothing is the same ever again when'
 	]);
 
 	let subject;
@@ -198,7 +217,8 @@ async function makeTwist(db) {
 		'becomes critically important',
 		'is no longer important',
 		'is nowhere to be found',
-		'goes missing'
+		'goes missing',
+		'find a purpose'
 	]);
 
 	return `${part1} ${subject} ${part2}.`
@@ -223,7 +243,8 @@ async function template(db) {
 		'focuses on',
 		'depicts',
 		'portrays',
-		'stars'
+		'stars',
+		'regards'
 	]);
 	const takesPlace = getOne([
 		'It takes place',
@@ -236,8 +257,12 @@ async function template(db) {
 		'Everything happens',
 		'It opens',
 		'It ends',
-		'The climax happens',
-		'They end up'
+		'The climax takes place',
+		'They end up',
+		'They wind up',
+		'Most of it occurs',
+		'The beginning takes place',
+		'The ending takes place'
 	])
 
 	// Fills in template to create story
