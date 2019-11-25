@@ -80,6 +80,62 @@ async function makeCharacter(db, filter) {
 		db, multi, 'animate', filter
 	)
 		.then(val => character += ` ${val}`);
+
+	if (roll(4) === 1) {
+		const addon = getOne([
+			'with no knowledge of',
+			'well-experienced with',
+			'with no exposure to',
+			'with no awareness of',
+			'skilled in the ways of',
+			'well-educated on the subject of',
+			'obsessed with',
+			'ignorant of',
+			'preoccupied with',
+			'indifferent to',
+			'unaffected by',
+			'afraid of',
+			'terrified of',
+			'with a hatred of',
+		])
+
+		let subj;
+		switch (roll(5)) {
+			case 1:
+				await WordService.getNoun(
+					db, 'singular', 'abstract', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 2:
+				await WordService.getNoun(
+					db, 'plural', 'animate', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 3:
+				await WordService.getNoun(
+					db, 'plural', 'object', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 4:
+				await WordService.getNoun(
+					db, 'singular', 'substance', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 5:
+				await WordService.getVerb(
+					db, 'gerund', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+		}
+
+		character += ` ${addon} ${subj}`
+	}
+
 	character = a(character);
 	return character;
 }
@@ -184,7 +240,7 @@ async function makeTwist(db, filter) {
 		'A solution is found when',
 		'A solution is needed when',
 		'A dillema arises when',
-		'To everyone\' surprise,',
+		'To everyone\'s surprise,',
 		'All of a sudden,',
 		'Unexpectedly,',
 		'As one might expect,',
@@ -267,7 +323,8 @@ async function template(db, filter) {
 	])
 
 	// Fills in template to create story
-	return `This ${genre} ${isAbout} ${char1}${char2}. ${takesPlace} ${settingPrep} ${setting} during ${period}. ${twist}`;
+	let story = `This ${genre} ${isAbout} ${char1}${char2}. ${takesPlace} ${settingPrep} ${setting} during ${period}. ${twist}`;
+	return story.replace(',.', '.');
 }
 
 // Returns array of stories

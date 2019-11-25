@@ -45,6 +45,8 @@ describe('Story Endpoints', () => {
 					.get('/api/stories')
 					.expect(200, testStories)
 			})
+
+			// it('GET /api/stories/:user_id ')
 		})
 	});
 
