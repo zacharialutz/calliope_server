@@ -7,8 +7,9 @@ const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const { CLIENT_ORIGIN } = require('./config');
 
-const storyRouter = require('./api/story-router');
+const storyRouter = require('./stories/story-router');
 const genRouter = require('./generator/gen-router');
+const userRouter = require('./users/user-router')
 const app = express();
 
 const morganOption = (NODE_ENV === 'production')
@@ -25,6 +26,8 @@ app.use(
 
 app.use('/api/stories', storyRouter);
 app.use('/api/generator', genRouter);
+app.use('/api/users', userRouter);
+
 
 app.get('/', (req, res) => {
 	res.send('Hello beautiful!');

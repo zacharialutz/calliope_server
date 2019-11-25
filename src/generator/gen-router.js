@@ -18,8 +18,6 @@ function parseQuery(q) {
 genRouter.route('/')
 	.get((req, res, next) => {
 		const filter = parseQuery(req.query);
-		console.log(filter);
-		console.log('HELLOOO');
 		generate(
 			req.app.get('db'),
 			req.query.num,
