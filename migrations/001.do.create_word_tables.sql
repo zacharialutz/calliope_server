@@ -3,7 +3,8 @@ CREATE TYPE theme_cat AS ENUM (
 	'modern',
 	'historic',
 	'scifi',
-	'fantasy'
+	'fantasy',
+	'off'
 );
 
 DROP TYPE IF EXISTS noun_cat;

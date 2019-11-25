@@ -5,6 +5,8 @@ const app = require('../src/app');
 
 const WordService = require('../src/generator/word-service')
 
+const testFilter = ['off', 'off', 'off', 'off'];
+
 describe('Generator Endpoint', () => {
 	it('responds with 200 and an array of given number', () => {
 		const testNum = 7;
@@ -30,7 +32,7 @@ describe('WordService', () => {
 	after('disconnect from db', () => db.destroy())
 
 	it('getNoun returns a single string', async () => {
-		expect(await WordService.getNoun(db, 'singular', 'animate')).to.be.a('string');
+		expect(await WordService.getNoun(db, 'singular', 'animate', testFilter)).to.be.a('string');
 		// console.log(await WordService.getNoun(db, true, 'animate'));
 	})
 })

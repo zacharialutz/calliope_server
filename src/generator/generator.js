@@ -2,82 +2,82 @@ const WordService = require('./word-service')
 
 // Returns a random integer from 1 to (num)
 function roll(num) {
-	return Math.floor( (Math.random() * num) ) + 1;
+	return Math.floor((Math.random() * num)) + 1;
 }
 
 // Picks a random item from an array
 function getOne(arr) {
-	const roll = Math.floor( (Math.random() * arr.length) );
+	const roll = Math.floor((Math.random() * arr.length));
 	return arr[roll];
 }
 
 // Turns 'a' into 'an' if input starts with a vowel
-function a (str) {
-	const vowels = ['a','e','i','o','u'];
+function a(str) {
+	const vowels = ['a', 'e', 'i', 'o', 'u'];
 	if (vowels.includes(str.charAt(0))) return `an ${str}`;
 	else return `a ${str}`;
 }
 
 // Generates a genre
-async function makeGenre(db) {
+async function makeGenre(db, filter) {
 	let genre;
 	await WordService.getNoun(
-		db, 'singular', 'genre'
+		db, 'singular', 'genre', filter
 	)
 		.then(val => genre = val);
 	return genre;
 }
 
 // Generates an adjective
-async function makeAdj(db, cat) {
+async function makeAdj(db, cat, filter) {
 	let adj = '';
 	if (roll(3) === 1) await WordService.getModifier(
-		db, cat
+		db, cat, filter
 	)
 		.then(val => adj = `${val} `);
 
 	await WordService.getAdjective(
-		db, cat
+		db, cat, filter
 	)
 		.then(val => adj += val);
 	return adj;
 }
 
 // Generates a material
-async function makeMaterial(db) {
+async function makeMaterial(db, filter) {
 	let material;
 	await WordService.getNoun(
-		db, 'singular', 'substance'
+		db, 'singular', 'substance', filter
 	)
 		.then(val => material = val);
 	return material;
 }
 
 // Generates a group - obj is either 'group' or 'container'
-async function makeGroup(db, obj) {
+async function makeGroup(db, obj, filter) {
 	let group;
 	await WordService.getNoun(
-		db, 'singular', obj
+		db, 'singular', obj, filter
 	)
 		.then(val => group = val);
 	return group;
 }
 
 // Generates a character with an adjective
-async function makeCharacter(db) {
+async function makeCharacter(db, filter) {
 	let character = '';
 	let multi = 'singular';
 
 	if (roll(3) === 1) {
 		multi = 'plural';
-		character = `${await makeGroup(db, 'group')} of `;
+		character = `${await makeGroup(db, 'group', filter)} of `;
 	}
 
-	if (roll(3) === 1) character += await makeAdj(db, 'general');
-	else character += await makeAdj(db, 'animate');
+	if (roll(3) === 1) character += await makeAdj(db, 'general', filter);
+	else character += await makeAdj(db, 'animate', filter);
 
 	await WordService.getNoun(
-		db, multi, 'animate'
+		db, multi, 'animate', filter
 	)
 		.then(val => character += ` ${val}`);
 	character = a(character);
@@ -85,7 +85,7 @@ async function makeCharacter(db) {
 }
 
 // Generates an object with an adjective
-async function makeObject(db) {
+async function makeObject(db, filter) {
 	let object = '';
 	let multi = 'singular';
 
@@ -98,14 +98,14 @@ async function makeObject(db) {
 			'stuffed with',
 			'filled with'
 		]);
-		object = `${await makeGroup(db, 'container')} of `;
+		object = `${await makeGroup(db, 'container', filter)} ${holds} `;
 	}
 
-	if (roll(3) === 1) object += await makeAdj(db, 'general');
-	else object += await makeAdj(db, 'object');
+	if (roll(3) === 1) object += await makeAdj(db, 'general', filter);
+	else object += await makeAdj(db, 'object', filter);
 
 	await WordService.getNoun(
-		db, multi, 'object'
+		db, multi, 'object', filter
 	)
 		.then(val => object += ` ${val}`);
 
@@ -119,53 +119,53 @@ async function makeObject(db) {
 		'appearing to be made of',
 		'fashioned from'
 	]);
-		if (roll(3) === 1) object += ` ${part} ${await makeMaterial(db)}`;
-	
+	if (roll(3) === 1) object += ` ${part} ${await makeMaterial(db, filter)}`;
+
 	object = a(object);
 	return object;
 }
 
 // Generates either a named location or a setting with adjective
-async function makeSetting(db) {
+async function makeSetting(db, filter) {
 	let setting;
 	let settingPrep = 'in';
-		if (roll(3) === 1) {
-			await WordService.getSetting(
-				db, 'location'
-			)
-				.then(val => {
-					setting = val[0];
-					if (val[1]) settingPrep = val[1];
-				});
-		}
-		else {
-			if (roll(3) === 1) setting = await makeAdj(db, 'general');
-			else setting = await makeAdj(db, 'place');
+	if (roll(3) === 1) {
+		await WordService.getSetting(
+			db, 'location', filter
+		)
+			.then(val => {
+				setting = val[0];
+				if (val[1]) settingPrep = val[1];
+			});
+	}
+	else {
+		if (roll(3) === 1) setting = await makeAdj(db, 'general', filter);
+		else setting = await makeAdj(db, 'place', filter);
 
-			await WordService.getSetting(
-				db, 'setting'
-			)
-				.then(val => {
-					setting += ` ${val[0]}`;
-					setting = a(setting);
-					if (val[1]) settingPrep = val[1];
-				});
-		}
+		await WordService.getSetting(
+			db, 'setting', filter
+		)
+			.then(val => {
+				setting += ` ${val[0]}`;
+				setting = a(setting);
+				if (val[1]) settingPrep = val[1];
+			});
+	}
 	return { setting, settingPrep };
 }
 
 // Generates a time setting
-async function makePeriod(db) {
+async function makePeriod(db, filter) {
 	let period;
 	await WordService.getNoun(
-		db, 'singular', 'period'
+		db, 'singular', 'period', filter
 	)
-	.then(val => period = val);
+		.then(val => period = val);
 	return period;
 }
 
 // Generates a plot twist
-async function makeTwist(db) {
+async function makeTwist(db, filter) {
 	const part1 = getOne([
 		'Everything changes when',
 		'The plot thickens when',
@@ -182,6 +182,7 @@ async function makeTwist(db) {
 		'Trouble begins when',
 		'Everything calms down when',
 		'A solution is found when',
+		'A solution is needed when',
 		'A dillema arises when',
 		'To everyone\' surprise,',
 		'All of a sudden,',
@@ -191,12 +192,12 @@ async function makeTwist(db) {
 		'Unfortunately,',
 		'Not surprisingly,',
 		'As expected,',
-		'Nothing is the same ever again when'
+		'Nothing is the same ever again once'
 	]);
 
 	let subject;
-	if (roll(2) === 1) subject = await makeCharacter(db);
-	else subject = await makeObject(db);
+	if (roll(2) === 1) subject = await makeCharacter(db, filter);
+	else subject = await makeObject(db, filter);
 
 	const part2 = getOne([
 		'is found',
@@ -225,14 +226,14 @@ async function makeTwist(db) {
 }
 
 // Generates items to insert into modular template
-async function template(db) {
-	const genre = await makeGenre(db);
-	const char1 = await makeCharacter(db);
-	const { setting, settingPrep } = await makeSetting(db);
-	const period = await makePeriod(db);
-	const twist = await makeTwist(db);
+async function template(db, filter) {
+	const genre = await makeGenre(db, filter);
+	const char1 = await makeCharacter(db, filter);
+	const { setting, settingPrep } = await makeSetting(db, filter);
+	const period = await makePeriod(db, filter);
+	const twist = await makeTwist(db, filter);
 	let char2 = '';
-		if (roll(3) === 1) char2 = ` and ${await makeCharacter(db)}`;
+	if (roll(3) === 1) char2 = ` and ${await makeCharacter(db, filter)}`;
 
 	const isAbout = getOne([
 		'is about',
@@ -270,10 +271,10 @@ async function template(db) {
 }
 
 // Returns array of stories
-async function generate(db, num = 1) {
+async function generate(db, num = 1, filter) {
 	let list = [];
 	for (let i = 0; i < num; i++) {
-		await template(db).then(story => list.push(story));
+		await template(db, filter).then(story => list.push(story));
 	}
 	// console.log(list);
 	return list;
