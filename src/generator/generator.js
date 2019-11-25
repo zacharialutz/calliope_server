@@ -31,7 +31,7 @@ async function makeGenre(db, filter) {
 // Generates an adjective
 async function makeAdj(db, cat, filter) {
 	let adj = '';
-	if (roll(3) === 1) await WordService.getModifier(
+	if (roll(4) === 1) await WordService.getModifier(
 		db, cat, filter
 	)
 		.then(val => adj = `${val} `);
@@ -100,7 +100,7 @@ async function makeCharacter(db, filter) {
 		])
 
 		let subj;
-		switch (roll(5)) {
+		switch (roll(6)) {
 			case 1:
 				await WordService.getNoun(
 					db, 'singular', 'abstract', filter
@@ -126,6 +126,12 @@ async function makeCharacter(db, filter) {
 					.then(val => subj = `${val}`);
 				break;
 			case 5:
+				await WordService.getNoun(
+					db, 'plural', 'setting', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 6:
 				await WordService.getVerb(
 					db, 'gerund', filter
 				)
@@ -166,7 +172,7 @@ async function makeObject(db, filter) {
 		.then(val => object += ` ${val}`);
 
 	const part = getOne([
-		'made of solid',
+		'made mostly out of',
 		'made entirely of',
 		'covered in',
 		'decorated with',
@@ -227,7 +233,7 @@ async function makeTwist(db, filter) {
 		'The plot thickens when',
 		'Suddenly,',
 		'The plot twist occurs when',
-		'Eventually,',
+		'Eventually',
 		'Everything falls apart when',
 		'Everything comes together when',
 		'All of a sudden,',
@@ -248,7 +254,11 @@ async function makeTwist(db, filter) {
 		'Unfortunately,',
 		'Not surprisingly,',
 		'As expected,',
-		'Nothing is the same ever again once'
+		'Nothing is ever the same again once',
+		'In the end',
+		'Unbeknown to anyone,',
+		'For some reason',
+		'For reasons unexplained'
 	]);
 
 	let subject;
@@ -275,7 +285,8 @@ async function makeTwist(db, filter) {
 		'is no longer important',
 		'is nowhere to be found',
 		'goes missing',
-		'find a purpose'
+		'find a purpose',
+		'is no longer wanted'
 	]);
 
 	return `${part1} ${subject} ${part2}.`
