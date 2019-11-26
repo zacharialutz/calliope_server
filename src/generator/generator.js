@@ -85,7 +85,6 @@ async function makeCharacter(db, filter) {
 		const addon = getOne([
 			'with no knowledge of',
 			'well-experienced with',
-			'with no exposure to',
 			'with no awareness of',
 			'skilled in the ways of',
 			'well-educated on the subject of',
@@ -97,6 +96,7 @@ async function makeCharacter(db, filter) {
 			'afraid of',
 			'terrified of',
 			'with a hatred of',
+			'with a love for'
 		])
 
 		let subj;
@@ -334,8 +334,7 @@ async function template(db, filter) {
 	])
 
 	// Fills in template to create story
-	let story = `This ${genre} ${isAbout} ${char1}${char2}. ${takesPlace} ${settingPrep} ${setting} during ${period}. ${twist}`;
-	return story.replace(',.', '.');
+	return `This ${genre} ${isAbout} ${char1}${char2}. ${takesPlace} ${settingPrep} ${setting} during ${period}. ${twist}`;
 }
 
 // Returns array of stories

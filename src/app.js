@@ -23,11 +23,11 @@ app.use(
 		origin: CLIENT_ORIGIN
 	})
 );
+app.use(express.json());
 
 app.use('/api/stories', storyRouter);
 app.use('/api/generator', genRouter);
 app.use('/api/users', userRouter);
-
 
 app.get('/', (req, res) => {
 	res.send('Hello beautiful!');

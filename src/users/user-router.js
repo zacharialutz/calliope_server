@@ -77,32 +77,32 @@ userRouter
 			req.app.get('db'),
 			req.params.user_id
 		)
-			.then(numRowsAffected => {
+			.then(() => {
 				res.status(204).end()
 			})
 			.catch(next)
 	})
-	.patch(jsonParser, (req, res, next) => {
-		const { username, password, email } = req.body
-		const userToUpdate = { username, password, email }
+	// .patch(jsonParser, (req, res, next) => {
+	// 	const { username, password, email } = req.body
+	// 	const userToUpdate = { username, password, email }
 
-		const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
-		if (numberOfValues === 0)
-			return res.status(400).json({
-				error: {
-					message: `Request body must contain either 'username', 'password' or 'email'`
-				}
-			})
+	// 	const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
+	// 	if (numberOfValues === 0)
+	// 		return res.status(400).json({
+	// 			error: {
+	// 				message: `Request body must contain either 'username', 'password' or 'email'`
+	// 			}
+	// 		})
 
-		UserService.updateUser(
-			req.app.get('db'),
-			req.params.user_id,
-			userToUpdate
-		)
-			.then(numRowsAffected => {
-				res.status(204).end()
-			})
-			.catch(next)
-	})
+	// 	UserService.updateUser(
+	// 		req.app.get('db'),
+	// 		req.params.user_id,
+	// 		userToUpdate
+	// 	)
+	// 		.then(() => {
+	// 			res.status(204).end()
+	// 		})
+	// 		.catch(next)
+	// })
 
 module.exports = userRouter

@@ -76,7 +76,7 @@ storyRouter
 			req.app.get('db'),
 			req.params.story_id
 		)
-			.then(numRowsAffected => {
+			.then(() => {
 				res.status(204).end()
 			})
 			.catch(next)
