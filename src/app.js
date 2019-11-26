@@ -19,9 +19,9 @@ const morganOption = (NODE_ENV === 'production')
 app.use(morgan(morganOption));
 app.use(helmet());
 app.use(
-    cors({
-        origin: CLIENT_ORIGIN
-    })
+	cors({
+		origin: CLIENT_ORIGIN
+	})
 );
 
 app.use('/api/stories', storyRouter);
