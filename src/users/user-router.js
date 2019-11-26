@@ -37,6 +37,7 @@ userRouter
 				})
 			}
 		}
+		console.log(newUser);
 
 		UserService.insertUser(
 			req.app.get('db'),
@@ -45,7 +46,7 @@ userRouter
 			.then(user => {
 				res
 					.status(201)
-					.location(path.posix.join(req.originalUrl, `/${user.id}`))
+					// .location(path.posix.join(req.originalUrl, `/${user.id}`))
 					.json(serializeUser(user))
 			})
 			.catch(next)
