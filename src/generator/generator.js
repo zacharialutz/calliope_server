@@ -31,15 +31,24 @@ async function makeGenre(db, filter) {
 // Generates an adjective
 async function makeAdj(db, cat, filter) {
 	let adj = '';
-	if (roll(4) === 1) await WordService.getModifier(
-		db, cat, filter
-	)
-		.then(val => adj = `${val} `);
+	if (roll(4) === 1 && cat === 'animate') {
+		await WordService.getVerb(
+			db, 'gerund', filter
+		)
+			.then(val => adj = val);
+	}
+	else {
+		if (roll(4) === 1) await WordService.getModifier(
+			db, cat, filter
+		)
+			.then(val => adj = `${val} `);
 
-	await WordService.getAdjective(
-		db, cat, filter
-	)
-		.then(val => adj += val);
+		await WordService.getAdjective(
+			db, cat, filter
+		)
+			.then(val => adj += val);
+	}
+
 	return adj;
 }
 
@@ -83,9 +92,9 @@ async function makeCharacter(db, filter) {
 
 	if (roll(4) === 1) {
 		const addon = getOne([
-			'with no knowledge of',
+			'ignorant in regards to',
 			'well-experienced with',
-			'with no awareness of',
+			'unaware of',
 			'skilled with',
 			'well-educated on the subject of',
 			'obsessed with',
@@ -94,9 +103,11 @@ async function makeCharacter(db, filter) {
 			'unaffected by',
 			'afraid of',
 			'terrified of',
-			'with a hatred of',
-			'with a love for',
-			'curious about'
+			'triggered by',
+			'enamoured with',
+			'curious about',
+			'useless with',
+			'excellent with'
 		])
 
 		let subj;
@@ -139,7 +150,10 @@ async function makeCharacter(db, filter) {
 				break;
 		}
 
-		character += ` ${addon} ${subj}`
+		let connect;
+		(multi === 'singular') ? connect = 'who is' : connect = 'who are'
+
+		character += ` ${connect} ${addon} ${subj}`
 	}
 
 	character = a(character);
@@ -177,7 +191,7 @@ async function makeObject(db, filter) {
 		'covered in',
 		'decorated with',
 		'made of',
-		'partly made from',
+		'made partly from',
 		'appearing to be made of',
 		'fashioned from'
 	]);
@@ -256,9 +270,11 @@ async function makeTwist(db, filter) {
 		'As expected,',
 		'Nothing is ever the same again once',
 		'In the end',
-		'Unbeknown to anyone,',
 		'For some reason',
-		'For reasons unexplained'
+		'For reasons unexplained',
+		'Goals are achieved when',
+		'Dreams are realized when',
+		'Dreams are shattered when'
 	]);
 
 	let subject;
@@ -285,8 +301,10 @@ async function makeTwist(db, filter) {
 		'is no longer important',
 		'is nowhere to be found',
 		'goes missing',
-		'find a purpose',
-		'is no longer wanted'
+		'finds a purpose',
+		'is no longer wanted',
+		'no longer has a purpose',
+		'is hidden'
 	]);
 
 	return `${part1} ${subject} ${part2}.`
@@ -318,19 +336,14 @@ async function template(db, filter) {
 		'It takes place',
 		'It starts',
 		'It opens',
-		'They live',
-		'They find themselves',
-		'They work',
 		'It begins',
 		'Everything happens',
-		'It opens',
 		'It ends',
 		'The climax takes place',
-		'They end up',
-		'They wind up',
 		'Most of it occurs',
 		'The beginning takes place',
-		'The ending takes place'
+		'The ending takes place',
+		'An important event occurs'
 	])
 
 	// Fills in template to create story
