@@ -46,8 +46,43 @@ userRouter
 			.then(user => {
 				res
 					.status(201)
-					// .location(path.posix.join(req.originalUrl, `/${user.id}`))
+					.location(path.posix.join(req.originalUrl, `/${user.id}`))
 					.json(serializeUser(user))
+			})
+			.catch(next)
+	})
+
+userRouter
+	.route('/login')
+	.all((req, res, next) => {
+		UserService.getByUsername(
+			req.app.get('db'),
+			req.query.username
+		)
+			.then(user => {
+				if (!user) {
+					return res.status(404).json({
+						error: { message: `Incorrect name and/or password` }
+					})
+				}
+				res.user = user
+				next()
+			})
+			.catch(next)
+	})
+	.get((req, res, next) => {
+		// console.log(req.query);
+		UserService.getByUsername(
+			req.app.get('db'),
+			req.query.username
+		)
+			.then(user => {
+				if (user.password !== req.query.password) {
+					return res.status(400).json({
+						error: { message: `Incorrect name and/or password` }
+					})
+				}
+				else res.json(serializeUser(user))
 			})
 			.catch(next)
 	})
@@ -83,27 +118,27 @@ userRouter
 			})
 			.catch(next)
 	})
-	// .patch(jsonParser, (req, res, next) => {
-	// 	const { username, password, email } = req.body
-	// 	const userToUpdate = { username, password, email }
+// .patch(jsonParser, (req, res, next) => {
+// 	const { username, password, email } = req.body
+// 	const userToUpdate = { username, password, email }
 
-	// 	const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
-	// 	if (numberOfValues === 0)
-	// 		return res.status(400).json({
-	// 			error: {
-	// 				message: `Request body must contain either 'username', 'password' or 'email'`
-	// 			}
-	// 		})
+// 	const numberOfValues = Object.values(userToUpdate).filter(Boolean).length
+// 	if (numberOfValues === 0)
+// 		return res.status(400).json({
+// 			error: {
+// 				message: `Request body must contain either 'username', 'password' or 'email'`
+// 			}
+// 		})
 
-	// 	UserService.updateUser(
-	// 		req.app.get('db'),
-	// 		req.params.user_id,
-	// 		userToUpdate
-	// 	)
-	// 		.then(() => {
-	// 			res.status(204).end()
-	// 		})
-	// 		.catch(next)
-	// })
+// 	UserService.updateUser(
+// 		req.app.get('db'),
+// 		req.params.user_id,
+// 		userToUpdate
+// 	)
+// 		.then(() => {
+// 			res.status(204).end()
+// 		})
+// 		.catch(next)
+// })
 
 module.exports = userRouter

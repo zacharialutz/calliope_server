@@ -86,17 +86,17 @@ async function makeCharacter(db, filter) {
 			'with no knowledge of',
 			'well-experienced with',
 			'with no awareness of',
-			'skilled in the ways of',
+			'skilled with',
 			'well-educated on the subject of',
 			'obsessed with',
-			'ignorant of',
 			'preoccupied with',
 			'indifferent to',
 			'unaffected by',
 			'afraid of',
 			'terrified of',
 			'with a hatred of',
-			'with a love for'
+			'with a love for',
+			'curious about'
 		])
 
 		let subj;
