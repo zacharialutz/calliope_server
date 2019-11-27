@@ -121,7 +121,6 @@ storyRouter
 			title: req.body.title,
 			content: req.body.content
 		}
-
 		const numberOfValues = Object.values(storyToUpdate).filter(Boolean).length
 		if (numberOfValues === 0)
 			return res.status(400).json({
