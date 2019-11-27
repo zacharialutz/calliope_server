@@ -1,4 +1,4 @@
-# Storytime Generator Server
+# PenSeed Server
 
 Server application for Storytime Generator
 

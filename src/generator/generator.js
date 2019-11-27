@@ -100,7 +100,6 @@ async function makeCharacter(db, filter) {
 			'obsessed with',
 			'preoccupied with',
 			'indifferent to',
-			'unaffected by',
 			'afraid of',
 			'terrified of',
 			'triggered by the sight of',
@@ -193,8 +192,10 @@ async function makeObject(db, filter) {
 		'decorated with',
 		'made of',
 		'made partly from',
-		'appearing to be made of',
-		'fashioned from'
+		'apparantly made of',
+		'fashioned from',
+		'embellished with',
+		'made to resemble'
 	]);
 	if (roll(3) === 1) object += ` ${part} ${await makeMaterial(db, filter)}`;
 
@@ -305,7 +306,7 @@ async function makeTwist(db, filter) {
 		'finds a purpose',
 		'is no longer wanted',
 		'no longer has a purpose',
-		'is hidden'
+		'becomes hidden'
 	]);
 
 	return `${part1} ${subject} ${part2}.`
