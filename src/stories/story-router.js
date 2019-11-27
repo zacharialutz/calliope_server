@@ -45,7 +45,7 @@ storyRouter.route('/')
 			.then(story => {
 				res
 					.status(201)
-					.location(path.posix.join(req.originalUrl, `/${story.id}`))
+					// .location(path.posix.join(req.originalUrl, `/${story.id}`))
 					.json(serializeStory(story))
 			})
 			.catch(next)
