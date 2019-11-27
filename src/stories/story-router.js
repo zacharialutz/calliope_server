@@ -1,6 +1,7 @@
 const express = require('express');
 
 const StoryService = require('./story-service');
+const UserService = require('../users/user-service');
 
 const storyRouter = express.Router();
 const jsonParser = express.json();
@@ -51,14 +52,49 @@ storyRouter.route('/')
 	})
 
 storyRouter
+	.route('/list/:user_id')
+	.all((req, res, next) => {
+		UserService.getById(
+			req.app.get('db'),
+			req.params.user_id
+		)
+			.then(user => {
+				if (!user) {
+					return res.status(404).json({
+						error: { message: `User doesn't exist` }
+					})
+				}
+				next()
+			})
+			.catch(next)
+	})
+	.get((req, res, next) => {
+		StoryService.getByAuthor(
+			req.app.get('db'),
+			req.params.user_id
+		)
+			.then(list => {
+				if (list === []) {
+					return res.status(404).json({
+						error: { message: `Author has no stories` }
+					})
+				}
+				res.json(list);
+				next()
+			})
+			.catch(next)
+	})
+
+
+storyRouter
 	.route('/:story_id')
 	.all((req, res, next) => {
 		StoryService.getById(
 			req.app.get('db'),
 			req.params.story_id
 		)
-			.then(user => {
-				if (!user) {
+			.then(story => {
+				if (!story) {
 					return res.status(404).json({
 						error: { message: `Story doesn't exist` }
 					})
@@ -100,7 +136,7 @@ storyRouter
 			req.params.story_id,
 			storyToUpdate
 		)
-			.then(numRowsAffected => {
+			.then(() => {
 				res.status(204).end()
 			})
 			.catch(next)

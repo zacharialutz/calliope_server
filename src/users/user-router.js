@@ -71,7 +71,6 @@ userRouter
 			.catch(next)
 	})
 	.get((req, res, next) => {
-		// console.log(req.query);
 		UserService.getByUsername(
 			req.app.get('db'),
 			req.query.username

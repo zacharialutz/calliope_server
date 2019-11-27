@@ -103,11 +103,12 @@ async function makeCharacter(db, filter) {
 			'unaffected by',
 			'afraid of',
 			'terrified of',
-			'triggered by',
+			'triggered by the sight of',
 			'enamoured with',
 			'curious about',
 			'useless with',
-			'excellent with'
+			'excellent with',
+			'offended by'
 		])
 
 		let subj;
@@ -150,10 +151,10 @@ async function makeCharacter(db, filter) {
 				break;
 		}
 
-		let connect;
-		(multi === 'singular') ? connect = 'who is' : connect = 'who are'
+		let toBe;
+		(multi === 'singular') ? toBe = 'is' : toBe = 'are'
 
-		character += ` ${connect} ${addon} ${subj}`
+		character += ` who ${toBe} ${addon} ${subj}`
 	}
 
 	character = a(character);

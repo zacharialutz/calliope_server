@@ -18,6 +18,12 @@ const StoryService = {
 			.where('id', id)
 			.first();
 	},
+	getByAuthor(knex, author) {
+		return knex
+			.from('saved_stories')
+			.select('*')
+			.where('author', author);
+	},
 	deleteStory(knex, id) {
 		return knex('saved_stories')
 			.where({ id })
