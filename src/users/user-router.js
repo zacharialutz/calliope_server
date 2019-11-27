@@ -37,7 +37,7 @@ userRouter
 				})
 			}
 		}
-		console.log(newUser);
+		// console.log(newUser);
 
 		UserService.insertUser(
 			req.app.get('db'),

@@ -5,7 +5,6 @@ const StoryService = {
 			.from('saved_stories');
 	},
 	insertStory(knex, newStory) {
-		console.log(newStory);
 		return knex
 			.insert(newStory)
 			.into('saved_stories')
