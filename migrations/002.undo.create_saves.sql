@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS saved_stories;
+DROP TABLE IF EXISTS users;
