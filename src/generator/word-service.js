@@ -44,6 +44,9 @@ function randomSetting(arr) {
 	return pick;
 }
 
+
+
+// Object for querying the database
 const WordService = {
 	// Queries DB for type of nouns and returns a random one
 	// knex: db connection
