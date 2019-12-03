@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const knex = require('knex');
 const app = require('../src/app');
 
-const { makeUserArray } = require('./users.fixtures');
+const { makeUserArray, expectedUserArray } = require('./users.fixtures');
 
 describe('User Endpoints', () => {
 	let db;
@@ -18,9 +18,9 @@ describe('User Endpoints', () => {
 
 	after('disconnect from db', () => db.destroy())
 
-	before('clean the table', () => db('users').truncate())
+	before('clean the table', () => db.raw('TRUNCATE saved_stories, users RESTART IDENTITY CASCADE'))
 
-	afterEach('cleanup', () => db('users').truncate())
+	afterEach('cleanup', () => db.raw('TRUNCATE saved_stories, users RESTART IDENTITY CASCADE'))
 
 	describe('GET /api/users', () => {
 		context('Given there are no users', () => {
@@ -33,6 +33,7 @@ describe('User Endpoints', () => {
 
 		context('Given there are users in the database', () => {
 			const testUsers = makeUserArray();
+			const expectedUsers = expectedUserArray();
 
 			beforeEach('insert users', () => {
 				return db
@@ -43,53 +44,88 @@ describe('User Endpoints', () => {
 			it('GET /api/users responds with 200 and all the users', () => {
 				return supertest(app)
 					.get('/api/users')
-					.expect(200, testUsers)
+					.expect(200)
+					.then(res => expect(res.body).to.have.lengthOf(testUsers.length))
 			})
 
-			// it('GET /api/stories/:user_id ')
+			it('GET /api/users/:user_id responds with 200 and a specific user', () => {
+				const user = 0;
+				return supertest(app)
+					.get('/api/users')
+					.expect(200)
+					.expect(res => {
+						expect(res.body).to.have.lengthOf(2);
+						expect(res.body[user].id).to.eql(user + 1);
+						expect(res.body[user].username).to.eql(expectedUsers[user].username);
+						expect(res.body[user].email).to.eql(expectedUsers[user].email);
+						expect(res.body[user].password).to.eql(expectedUsers[user].password);
+					})
+			})
 		})
 	});
 
-	// describe('POST /api/stories', () => {
-	// 	it('creates a story, responding with 201 and the new story', function() {
-	// 		const newStory = {
-	// 			title: 'Test new story',
-	// 			content: 'Test new content...'
-	// 		}
-	// 		return supertest(app)
-	// 			.post('/api/stories')
-	// 			.send(newStory)
-	// 			.expect(201)
-	// 			.expect(res => {
-	// 				expect(res.body.title).to.eql(newStory.title)
-	// 				expect(res.body.content).to.eql(newStory.content)
-	// 				expect(res.body).to.have.property('id')
-	// 				expect(res.headers.location).to.eql(`/api/stories/${res.body.id}`)
-	// 			})
-	// 			.then(postRes =>
-	// 				supertest(app)
-	// 					.get(`/api/stories/${postRes.body.id}`)
-	// 					.expect(postRes.body)
-	// 			)
-	// 	})
+	describe('POST /api/users', () => {
+		it('POST responds with 201 and the new user', () => {
+			const newUser = {
+				username: 'Liz',
+				email: 'stilebydesign@gmail.com',
+				password: '555',
+			}
+			return supertest(app)
+				.post('/api/users')
+				.send(newUser)
+				.expect(201)
+				.expect(res => {
+					expect(res.body.username).to.eql(newUser.username)
+					expect(res.body.email).to.eql(newUser.email)
+					expect(res.body.password).to.eql(newUser.password)
+					expect(res.body).to.have.property('id')
+					expect(res.headers.location).to.eql(`/api/users/${res.body.id}`)
+				})
+				.then(postRes =>
+					supertest(app)
+						.get(`/api/users/${postRes.body.id}`)
+						.expect(postRes.body)
+				)
+		})
+	});
 
-	// 	const requiredFields = ['title'];
+	describe('DELETE /api/users/user:id', () => {
+		context('Given no user', () => {
+			it('responds with 404', () => {
+				const userId = 123456;
+				return supertest(app)
+					.delete(`/api/users/${userId}`)
+					.expect(404, { error: { message: `User doesn't exist` } })
+			})
+		})
 
-	// 	requiredFields.forEach(field => {
-	// 		const newStory = {
-	// 			title: 'Test new story',
-	// 			content: 'Test new content...'
-	// 		}
-	// 		it(`responds with 400 and an error message when the ${field} is missing`, () => {
-	// 			delete newStory[field]
+		context('Given there are users in the database', () => {
+			const testUsers = makeUserArray();
+			const expectedUsers = expectedUserArray();
 
-	// 			return supertest(app)
-	// 				.post('/api/stories')
-	// 				.send(newStory)
-	// 				.expect(400, {
-	// 					error: { message: `Missing ${field} in request body` }
-	// 				})
-	// 		})
-	// 	})
-	// })
+			beforeEach('insert users', () => {
+				return db
+					.into('users')
+					.insert(testUsers)
+			})
+
+			it('responds with 204 and removes the user', () => {
+				const idToRemove = 2
+				const expected = expectedUsers.filter(user => user.id !== idToRemove)
+				return supertest(app)
+					.delete(`/api/users/${idToRemove}`)
+					.expect(204)
+					.then(() =>
+						supertest(app)
+							.get(`/api/users`)
+							.expect(res => {
+								expect(res.body.username).to.eql(expected.username)
+								expect(res.body.email).to.eql(expected.email)
+								expect(res.body.password).to.eql(expected.password)
+							})
+					)
+			})
+		})
+	})
 })
