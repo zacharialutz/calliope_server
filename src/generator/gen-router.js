@@ -18,9 +18,11 @@ function parseQuery(q) {
 genRouter.route('/')
 	.get((req, res, next) => {
 		const filter = parseQuery(req.query);
+		let num = req.query.num;
+		if (req.query.num > 10) num = 10;
 		generate(
 			req.app.get('db'),
-			req.query.num,
+			num,
 			filter
 		)
 		.then(stories => {

@@ -89,73 +89,110 @@ async function makeCharacter(db, filter) {
 	)
 		.then(val => character += ` ${val}`);
 
-	if (roll(4) === 1) {
-		const addon = getOne([
-			'ignorant in regards to',
-			'well-experienced with',
-			'unaware of',
-			'skilled with',
-			'well-educated on the subject of',
-			'obsessed with',
-			'preoccupied with',
-			'indifferent to',
-			'afraid of',
-			'terrified of',
-			'triggered by',
-			'enamoured with',
-			'curious about',
-			'useless with',
-			'excellent with',
-			'offended by',
-			'easily influenced by',
-			'infatuated with',
-			'beset by nightmares of'
-		])
-
-		let subj;
-		switch (roll(6)) {
+	if (roll(3) === 1) {
+		switch (roll(2)) {
 			case 1:
-				await WordService.getNoun(
-					db, 'singular', 'abstract', filter
-				)
-					.then(val => subj = `${val}`);
+				const addon = getOne([
+					'ignorant to the ways of',
+					'well-experienced with',
+					'unaware of',
+					'skilled with',
+					'well-educated on the subject of',
+					'obsessed with',
+					'preoccupied with',
+					'indifferent to',
+					'afraid of',
+					'terrified of',
+					'triggered by',
+					'enamoured with',
+					'curious about',
+					'useless with',
+					'excellent with',
+					'offended by',
+					'easily influenced by',
+					'infatuated with',
+					'beset by nightmares of'
+				])
+
+				let subj;
+				switch (roll(6)) {
+					case 1:
+						await WordService.getNoun(
+							db, 'singular', 'abstract', filter
+						)
+							.then(val => subj = `${val}`);
+						break;
+					case 2:
+						await WordService.getNoun(
+							db, 'plural', 'animate', filter
+						)
+							.then(val => subj = `${val}`);
+						break;
+					case 3:
+						await WordService.getNoun(
+							db, 'plural', 'object', filter
+						)
+							.then(val => subj = `${val}`);
+						break;
+					case 4:
+						await WordService.getNoun(
+							db, 'singular', 'substance', filter
+						)
+							.then(val => subj = `${val}`);
+						break;
+					case 5:
+						await WordService.getNoun(
+							db, 'plural', 'setting', filter
+						)
+							.then(val => subj = `${val}`);
+						break;
+					case 6:
+						await WordService.getVerb(
+							db, 'gerund', filter
+						)
+							.then(val => subj = `${val}`);
+				}
+
+				let toBe;
+				(multi === 'singular') ? toBe = 'is' : toBe = 'are'
+
+				character += ` who ${toBe} ${addon} ${subj}`
 				break;
 			case 2:
-				await WordService.getNoun(
-					db, 'plural', 'animate', filter
-				)
-					.then(val => subj = `${val}`);
-				break;
-			case 3:
-				await WordService.getNoun(
-					db, 'plural', 'object', filter
-				)
-					.then(val => subj = `${val}`);
-				break;
-			case 4:
-				await WordService.getNoun(
-					db, 'singular', 'substance', filter
-				)
-					.then(val => subj = `${val}`);
-				break;
-			case 5:
-				await WordService.getNoun(
-					db, 'plural', 'setting', filter
-				)
-					.then(val => subj = `${val}`);
-				break;
-			case 6:
+				let someVerb;
+				let tense;
+				(multi === 'singular') ? tense = 'present' : tense = 'infinitive'
+
+				// Make verb with potential adverb
 				await WordService.getVerb(
-					db, 'gerund', filter
+					db, tense, filter
 				)
-					.then(val => subj = `${val}`);
-				break;
+					.then(val => someVerb = `${val}`);
+				if (roll(2) === 1) {
+					await WordService.getAdjective(
+						db, 'adverb', filter
+					)
+						.then(val => someVerb += ` ${val}`);
+				}
+
+				let freq = ''
+				if (roll(2) === 1) {
+					freq = getOne([
+						' once in a while',
+						' far too often',
+						' every day',
+						' on occasion',
+						' when the time is right',
+						' when no one is watching',
+						' from time to time',
+						' whenever possible',
+						' just for fun',
+						' when in a mood'
+					])
+				}
+				
+				character += ` who ${someVerb}${freq}`
 		}
-
-		let toBe;
-		(multi === 'singular') ? toBe = 'is' : toBe = 'are'
-
-		character += ` who ${toBe} ${addon} ${subj}`
 	}
 
 	character = a(character);
@@ -317,20 +354,13 @@ async function makeTwist(db, filter) {
 
 // Generates items to insert into modular template
 async function template(db, filter) {
-	// console.log('template start');
 	const genre = await makeGenre(db, filter);
-	// console.log(genre);
 	const char1 = await makeCharacter(db, filter);
-	// console.log(char1);
 	const { setting, settingPrep } = await makeSetting(db, filter);
-	// console.log(setting);
 	const period = await makePeriod(db, filter);
-	// console.log(period);
 	const twist = await makeTwist(db, filter);
-	// console.log(twist);
 	let char2 = '';
 	if (roll(3) === 1) char2 = ` and ${await makeCharacter(db, filter)}`;
-	// console.log(char2);
 
 	const isAbout = getOne([
 		'is about',
@@ -377,12 +407,10 @@ async function template(db, filter) {
 
 // Returns array of stories
 async function generate(db, num = 1, filter) {
-	// console.log('starting generator');
 	let list = [];
 	for (let i = 0; i < num; i++) {
 		await template(db, filter).then(story => list.push(story));
 	}
-	// console.log(list);
 	return list;
 }
 

@@ -30,7 +30,6 @@ function randomOne(arr, label) {
 			pick = arr[roll].gerund;
 			break;
 	}
-	// console.log(pick);
 	return pick;
 }
 
@@ -43,8 +42,6 @@ function randomSetting(arr) {
 	];
 	return pick;
 }
-
-
 
 // Object for querying the database
 const WordService = {
