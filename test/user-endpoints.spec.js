@@ -33,7 +33,6 @@ describe('User Endpoints', () => {
 
 		context('Given there are users in the database', () => {
 			const testUsers = makeUserArray();
-			const expectedUsers = expectedUserArray();
 
 			beforeEach('insert users', () => {
 				return db
@@ -49,17 +48,63 @@ describe('User Endpoints', () => {
 			})
 
 			it('GET /api/users/:user_id responds with 200 and a specific user', () => {
-				const user = 0;
+				const userId = 1;
+				const expectedUser = testUsers[userId - 1];
 				return supertest(app)
-					.get('/api/users')
+					.get(`/api/users/${userId}`)
 					.expect(200)
 					.expect(res => {
-						expect(res.body).to.have.lengthOf(2);
-						expect(res.body[user].id).to.eql(user + 1);
-						expect(res.body[user].username).to.eql(expectedUsers[user].username);
-						expect(res.body[user].email).to.eql(expectedUsers[user].email);
-						expect(res.body[user].password).to.eql(expectedUsers[user].password);
+						expect(res.body.username).to.eql(expectedUser.username)
+						expect(res.body.email).to.eql(expectedUser.email)
+						expect(res.body.password).to.eql(expectedUser.password)
+						expect(res.body).to.have.property('id')
 					})
+			})
+		})
+	});
+
+	describe('GET /api/login', () => {
+		context('Given there are no users', () => {
+			it('responds with 404 and an error', () => {
+				return supertest(app)
+					.get('/api/users/login?username=12345')
+					.expect(404, { error: { message: `Incorrect name and/or password` } });
+			})
+		});
+
+		context('Given there are users in the database', () => {
+			const testUsers = makeUserArray();
+
+			beforeEach('insert users', () => {
+				return db
+					.into('users')
+					.insert(testUsers)
+			})
+
+			it('GET /api/users/login?username responds with 200 and a specific user', () => {
+				const testId = 0;
+				const testName = testUsers[testId].username;
+				const testPassword = testUsers[testId].password;
+				const expectedUser = testUsers[testId];
+				return supertest(app)
+					.get(`/api/users/login?username=${testName}&password=${testPassword}`)
+					.expect(200)
+					.expect(res => {
+						expect(res.body.username).to.eql(expectedUser.username)
+						expect(res.body.email).to.eql(expectedUser.email)
+						expect(res.body.password).to.eql(expectedUser.password)
+						expect(res.body).to.have.property('id')
+					})
+			})
+
+			it('GET /api/users/login and bad password responds with 400 and an error', () => {
+				const testId = 0;
+				const testName = testUsers[testId].username;
+				const testPassword = 'bogus';
+				const expectedUser = testUsers[testId];
+				return supertest(app)
+					.get(`/api/users/login?username=${testName}&password=${testPassword}`)
+					.expect(400, { error: { message: `Incorrect name and/or password` } });
 			})
 		})
 	});
@@ -92,7 +137,7 @@ describe('User Endpoints', () => {
 
 	describe('DELETE /api/users/user:id', () => {
 		context('Given no user', () => {
-			it('responds with 404', () => {
+			it('responds with 404 and an error', () => {
 				const userId = 123456;
 				return supertest(app)
 					.delete(`/api/users/${userId}`)

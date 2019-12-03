@@ -104,7 +104,7 @@ storyRouter
 			.catch(next)
 	})
 	.get((req, res, next) => {
-		res.json(serializeStory(res.user))
+		res.json(serializeStory(res.story))
 	})
 	.delete((req, res, next) => {
 		StoryService.deleteStory(
