@@ -22,69 +22,53 @@ function a(str) {
 // Generates a genre
 async function makeGenre(db, filter) {
 	let genre;
-	try {
-		await WordService.getNoun(
-			db, 'singular', 'genre', filter
-		)
-			.then(val => genre = val);
-	}
-	catch (e) { console.log(e) }
-
+	await WordService.getNoun(
+		db, 'singular', 'genre', filter
+	)
+		.then(val => genre = val);
 	return genre;
 }
 
 // Generates an adjective
 async function makeAdj(db, cat, filter) {
 	let adj = '';
-	try {
-		if (roll(4) === 1 && cat === 'animate') {
-			await WordService.getVerb(
-				db, 'gerund', filter
-			)
-				.then(val => adj = val);
-		}
-		else {
-			if (roll(4) === 1) await WordService.getModifier(
-				db, cat, filter
-			)
-				.then(val => adj = `${val} `);
-
-			await WordService.getAdjective(
-				db, cat, filter
-			)
-				.then(val => adj += val);
-		}
+	if (roll(4) === 1 && cat === 'animate') {
+		await WordService.getVerb(
+			db, 'gerund', filter
+		)
+			.then(val => adj = val);
 	}
-	catch (e) { console.log(e) };
+	else {
+		if (roll(4) === 1) await WordService.getModifier(
+			db, cat, filter
+		)
+			.then(val => adj = `${val} `);
 
+		await WordService.getAdjective(
+			db, cat, filter
+		)
+			.then(val => adj += val);
+	}
 	return adj;
 }
 
 // Generates a material
 async function makeMaterial(db, filter) {
 	let material;
-	try {
-		await WordService.getNoun(
-			db, 'singular', 'substance', filter
-		)
-			.then(val => material = val);
-	}
-	catch (e) { console.log(e) };
-
+	await WordService.getNoun(
+		db, 'singular', 'substance', filter
+	)
+		.then(val => material = val);
 	return material;
 }
 
 // Generates a group - obj is either 'group' or 'container'
 async function makeGroup(db, obj, filter) {
 	let group;
-	try {
-		await WordService.getNoun(
-			db, 'singular', obj, filter
-		)
-			.then(val => group = val);
-	}
-	catch (e) { console.log(e) };
-
+	await WordService.getNoun(
+		db, 'singular', obj, filter
+	)
+		.then(val => group = val);
 	return group;
 }
 
@@ -92,90 +76,87 @@ async function makeGroup(db, obj, filter) {
 async function makeCharacter(db, filter) {
 	let character = '';
 	let multi = 'singular';
-	try {
-		if (roll(3) === 1) {
-			multi = 'plural';
-			character = `${await makeGroup(db, 'group', filter)} of `;
-		}
-
-		if (roll(3) === 1) character += await makeAdj(db, 'general', filter);
-		else character += await makeAdj(db, 'animate', filter);
-
-		await WordService.getNoun(
-			db, multi, 'animate', filter
-		)
-			.then(val => character += ` ${val}`);
-
-		if (roll(4) === 1) {
-			const addon = getOne([
-				'ignorant in regards to',
-				'well-experienced with',
-				'unaware of',
-				'skilled with',
-				'well-educated on the subject of',
-				'obsessed with',
-				'preoccupied with',
-				'indifferent to',
-				'afraid of',
-				'terrified of',
-				'triggered by',
-				'enamoured with',
-				'curious about',
-				'useless with',
-				'excellent with',
-				'offended by',
-				'easily influenced by',
-				'infatuated with',
-				'beset by nightmares of'
-			])
-
-			let subj;
-			switch (roll(6)) {
-				case 1:
-					await WordService.getNoun(
-						db, 'singular', 'abstract', filter
-					)
-						.then(val => subj = `${val}`);
-					break;
-				case 2:
-					await WordService.getNoun(
-						db, 'plural', 'animate', filter
-					)
-						.then(val => subj = `${val}`);
-					break;
-				case 3:
-					await WordService.getNoun(
-						db, 'plural', 'object', filter
-					)
-						.then(val => subj = `${val}`);
-					break;
-				case 4:
-					await WordService.getNoun(
-						db, 'singular', 'substance', filter
-					)
-						.then(val => subj = `${val}`);
-					break;
-				case 5:
-					await WordService.getNoun(
-						db, 'plural', 'setting', filter
-					)
-						.then(val => subj = `${val}`);
-					break;
-				case 6:
-					await WordService.getVerb(
-						db, 'gerund', filter
-					)
-						.then(val => subj = `${val}`);
-					break;
-			}
-
-			let toBe;
-			(multi === 'singular') ? toBe = 'is' : toBe = 'are'
-
-			character += ` who ${toBe} ${addon} ${subj}`
-		}
+	if (roll(3) === 1) {
+		multi = 'plural';
+		character = `${await makeGroup(db, 'group', filter)} of `;
 	}
-	catch (e) { console.log(e) };
+
+	if (roll(3) === 1) character += await makeAdj(db, 'general', filter);
+	else character += await makeAdj(db, 'animate', filter);
+
+	await WordService.getNoun(
+		db, multi, 'animate', filter
+	)
+		.then(val => character += ` ${val}`);
+
+	if (roll(4) === 1) {
+		const addon = getOne([
+			'ignorant in regards to',
+			'well-experienced with',
+			'unaware of',
+			'skilled with',
+			'well-educated on the subject of',
+			'obsessed with',
+			'preoccupied with',
+			'indifferent to',
+			'afraid of',
+			'terrified of',
+			'triggered by',
+			'enamoured with',
+			'curious about',
+			'useless with',
+			'excellent with',
+			'offended by',
+			'easily influenced by',
+			'infatuated with',
+			'beset by nightmares of'
+		])
+
+		let subj;
+		switch (roll(6)) {
+			case 1:
+				await WordService.getNoun(
+					db, 'singular', 'abstract', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 2:
+				await WordService.getNoun(
+					db, 'plural', 'animate', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 3:
+				await WordService.getNoun(
+					db, 'plural', 'object', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 4:
+				await WordService.getNoun(
+					db, 'singular', 'substance', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 5:
+				await WordService.getNoun(
+					db, 'plural', 'setting', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+			case 6:
+				await WordService.getVerb(
+					db, 'gerund', filter
+				)
+					.then(val => subj = `${val}`);
+				break;
+		}
+
+		let toBe;
+		(multi === 'singular') ? toBe = 'is' : toBe = 'are'
+
+		character += ` who ${toBe} ${addon} ${subj}`
+	}
 
 	character = a(character);
 	return character;
@@ -185,42 +166,39 @@ async function makeCharacter(db, filter) {
 async function makeObject(db, filter) {
 	let object = '';
 	let multi = 'singular';
-	try {
-		if (roll(3) === 1) {
-			multi = 'plural';
-			const holds = getOne([
-				'of',
-				'full of',
-				'containing',
-				'stuffed with',
-				'filled with'
-			]);
-			object = `${await makeGroup(db, 'container', filter)} ${holds} `;
-		}
-
-		if (roll(3) === 1) object += await makeAdj(db, 'general', filter);
-		else object += await makeAdj(db, 'object', filter);
-
-		await WordService.getNoun(
-			db, multi, 'object', filter
-		)
-			.then(val => object += ` ${val}`);
-
-		const part = getOne([
-			'made mostly out of',
-			'made entirely of',
-			'covered in',
-			'decorated with',
-			'made of',
-			'made partly from',
-			'apparantly made of',
-			'fashioned from',
-			'embellished with',
-			'made to resemble'
+	if (roll(3) === 1) {
+		multi = 'plural';
+		const holds = getOne([
+			'of',
+			'full of',
+			'containing',
+			'stuffed with',
+			'filled with'
 		]);
-		if (roll(3) === 1) object += ` ${part} ${await makeMaterial(db, filter)}`;
+		object = `${await makeGroup(db, 'container', filter)} ${holds} `;
 	}
-	catch (e) { console.log(e) };
+
+	if (roll(3) === 1) object += await makeAdj(db, 'general', filter);
+	else object += await makeAdj(db, 'object', filter);
+
+	await WordService.getNoun(
+		db, multi, 'object', filter
+	)
+		.then(val => object += ` ${val}`);
+
+	const part = getOne([
+		'made mostly out of',
+		'made entirely of',
+		'covered in',
+		'decorated with',
+		'made of',
+		'made partly from',
+		'apparantly made of',
+		'fashioned from',
+		'embellished with',
+		'made to resemble'
+	]);
+	if (roll(3) === 1) object += ` ${part} ${await makeMaterial(db, filter)}`;
 
 	object = a(object);
 	return object;
@@ -230,31 +208,28 @@ async function makeObject(db, filter) {
 async function makeSetting(db, filter) {
 	let setting;
 	let settingPrep = 'in';
-	try {
-		if (roll(3) === 1) {
-			await WordService.getSetting(
-				db, 'location', filter
-			)
-				.then(val => {
-					setting = val[0];
-					if (val[1]) settingPrep = val[1];
-				});
-		}
-		else {
-			if (roll(3) === 1) setting = await makeAdj(db, 'general', filter);
-			else setting = await makeAdj(db, 'place', filter);
-
-			await WordService.getSetting(
-				db, 'setting', filter
-			)
-				.then(val => {
-					setting += ` ${val[0]}`;
-					setting = a(setting);
-					if (val[1]) settingPrep = val[1];
-				});
-		}
+	if (roll(3) === 1) {
+		await WordService.getSetting(
+			db, 'location', filter
+		)
+			.then(val => {
+				setting = val[0];
+				if (val[1]) settingPrep = val[1];
+			});
 	}
-	catch (e) { console.log(e) };
+	else {
+		if (roll(3) === 1) setting = await makeAdj(db, 'general', filter);
+		else setting = await makeAdj(db, 'place', filter);
+
+		await WordService.getSetting(
+			db, 'setting', filter
+		)
+			.then(val => {
+				setting += ` ${val[0]}`;
+				setting = a(setting);
+				if (val[1]) settingPrep = val[1];
+			});
+	}
 
 	return { setting, settingPrep };
 }
@@ -262,13 +237,10 @@ async function makeSetting(db, filter) {
 // Generates a time setting
 async function makePeriod(db, filter) {
 	let period;
-	try {
-		await WordService.getNoun(
-			db, 'singular', 'period', filter
-		)
-			.then(val => period = val);
-	}
-	catch (e) { console.log(e) };
+	await WordService.getNoun(
+		db, 'singular', 'period', filter
+	)
+		.then(val => period = val);
 
 	return period;
 }
@@ -311,11 +283,8 @@ async function makeTwist(db, filter) {
 	]);
 
 	let subject;
-	try {
-		if (roll(2) === 1) subject = await makeCharacter(db, filter);
-		else subject = await makeObject(db, filter);
-	}
-	catch (e) { console.log(e) };
+	if (roll(2) === 1) subject = await makeCharacter(db, filter);
+	else subject = await makeObject(db, filter);
 
 	const part2 = getOne([
 		'is found',

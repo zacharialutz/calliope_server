@@ -25,7 +25,7 @@ storyRouter.route('/')
 	})
 	.post(jsonParser, (req, res, next) => {
 		const newStory = {
-			title: 'New Story',
+			title: req.body.title,
 			content: req.body.content,
 			author: req.body.author
 		}

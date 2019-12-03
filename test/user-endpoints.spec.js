@@ -31,6 +31,13 @@ describe('User Endpoints', () => {
 			})
 		});
 
+		it('GET /api/users/:user_id responds with 404 and an error', () => {
+			const userId = 1;
+			return supertest(app)
+				.get(`/api/users/${userId}`)
+				.expect(404, { error: { message: `User doesn't exist` } })
+		})
+
 		context('Given there are users in the database', () => {
 			const testUsers = makeUserArray();
 
@@ -81,7 +88,7 @@ describe('User Endpoints', () => {
 					.insert(testUsers)
 			})
 
-			it('GET /api/users/login?username responds with 200 and a specific user', () => {
+			it('GET /api/users/login responds with 200 and a specific user', () => {
 				const testId = 0;
 				const testName = testUsers[testId].username;
 				const testPassword = testUsers[testId].password;
@@ -132,6 +139,24 @@ describe('User Endpoints', () => {
 						.get(`/api/users/${postRes.body.id}`)
 						.expect(postRes.body)
 				)
+		})
+
+		const requiredFields = ['username', 'email', 'password'];
+
+		requiredFields.forEach(field => {
+			const newUser = {
+				username: 'NewUser',
+				email: 'test@example.com',
+				password: 333
+			}
+			it(`responds with 400 and an error message when the ${field} is missing`, () => {
+				delete newUser[field]
+
+				return supertest(app)
+					.post('/api/users')
+					.send(newUser)
+					.expect(400, { error: { message: `Missing '${field}' in request body` } })
+			})
 		})
 	});
 
