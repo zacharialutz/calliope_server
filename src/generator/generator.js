@@ -13,8 +13,10 @@ function getOne(arr) {
 
 // Turns 'a' into 'an' if input starts with a vowel
 function a(str) {
+	const edgeCases = ['uniq', 'one-'];
 	const vowels = ['a', 'e', 'i', 'o', 'u'];
-	if (vowels.includes(str.charAt(0))) return `an ${str}`;
+	console.log(str);
+	if (vowels.includes(str.charAt(0)) && !edgeCases.includes(str.slice(0,4))) return `an ${str}`;
 	else return `a ${str}`;
 }
 
@@ -102,12 +104,15 @@ async function makeCharacter(db, filter) {
 			'indifferent to',
 			'afraid of',
 			'terrified of',
-			'triggered by the sight of',
+			'triggered by',
 			'enamoured with',
 			'curious about',
 			'useless with',
 			'excellent with',
-			'offended by'
+			'offended by',
+			'easily influenced by',
+			'infatuated with',
+			'beset by nightmares of'
 		])
 
 		let subj;
@@ -249,7 +254,7 @@ async function makeTwist(db, filter) {
 		'The plot thickens when',
 		'Suddenly,',
 		'The plot twist occurs when',
-		'Eventually',
+		'Eventually,',
 		'Everything falls apart when',
 		'Everything comes together when',
 		'All of a sudden,',
@@ -271,12 +276,12 @@ async function makeTwist(db, filter) {
 		'Not surprisingly,',
 		'As expected,',
 		'Nothing is ever the same again once',
-		'In the end',
-		'For some reason',
-		'For reasons unexplained',
+		'In the end,',
+		'For some reason,',
+		'For reasons unexplained,',
 		'Goals are achieved when',
 		'Dreams are realized when',
-		'Dreams are shattered when'
+		'Dreams are shattered when',
 	]);
 
 	let subject;
@@ -348,8 +353,21 @@ async function template(db, filter) {
 		'An important event occurs'
 	])
 
+	// Time and place setting
+	let middle = '';
+	switch (roll(3)) {
+		case 1:
+			middle = `${takesPlace} ${settingPrep} ${setting} during ${period}.`;
+			break;
+		case 2:
+			middle = `${takesPlace} ${settingPrep} ${setting}.`;
+			break;
+		case 3:
+			middle = `${takesPlace} during ${period}.`
+	}
+
 	// Fills in template to create story
-	return `This ${genre} ${isAbout} ${char1}${char2}. ${takesPlace} ${settingPrep} ${setting} during ${period}. ${twist}`;
+	return `This ${genre} ${isAbout} ${char1}${char2}. ${middle} ${twist}`;
 }
 
 // Returns array of stories
