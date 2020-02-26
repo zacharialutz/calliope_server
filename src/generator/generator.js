@@ -1,4 +1,6 @@
-const WordService = require('./word-service')
+'use strict';
+
+const WordService = require('./word-service');
 
 // Returns a random integer from 1 to (num)
 function roll(num) {
@@ -21,7 +23,7 @@ function a(str) {
 
 // Generates a genre
 async function makeGenre(db, filter) {
-	let genre;
+	let genre = '';
 	await WordService.getNoun(
 		db, 'singular', 'genre', filter
 	)
@@ -54,7 +56,7 @@ async function makeAdj(db, cat, filter) {
 
 // Generates a material
 async function makeMaterial(db, filter) {
-	let material;
+	let material = '';
 	await WordService.getNoun(
 		db, 'singular', 'substance', filter
 	)
@@ -64,7 +66,7 @@ async function makeMaterial(db, filter) {
 
 // Generates a group - obj is either 'group' or 'container'
 async function makeGroup(db, obj, filter) {
-	let group;
+	let group = '';
 	await WordService.getNoun(
 		db, 'singular', obj, filter
 	)
@@ -111,10 +113,18 @@ async function makeCharacter(db, filter) {
 					'offended by',
 					'easily influenced by',
 					'infatuated with',
-					'beset by nightmares of'
-				])
+					'beset by nightmares of',
+					'allergic to',
+					'familiar with',
+					'unfamiliar with',
+					'comfortable with',
+					'uncomfortable with',
+					'against',
+					'supportive of',
+					'suspicious of'
+				]);
 
-				let subj;
+				let subj = '';
 				switch (roll(6)) {
 					case 1:
 						await WordService.getNoun(
@@ -153,15 +163,15 @@ async function makeCharacter(db, filter) {
 							.then(val => subj = `${val}`);
 				}
 
-				let toBe;
-				(multi === 'singular') ? toBe = 'is' : toBe = 'are'
+				let toBe = '';
+				(multi === 'singular') ? toBe = 'is' : toBe = 'are';
 
-				character += ` who ${toBe} ${addon} ${subj}`
+				character += ` who ${toBe} ${addon} ${subj}`;
 				break;
 			case 2:
-				let someVerb;
-				let tense;
-				(multi === 'singular') ? tense = 'present' : tense = 'infinitive'
+				let someVerb = '';
+				let tense = '';
+				(multi === 'singular') ? tense = 'present' : tense = 'infinitive';
 
 				// Make verb with potential adverb
 				await WordService.getVerb(
@@ -175,28 +185,49 @@ async function makeCharacter(db, filter) {
 						.then(val => someVerb += ` ${val}`);
 				}
 
-				let freq = ''
+				let freq = '';
 				if (roll(2) === 1) {
 					freq = getOne([
-						' once in a while',
-						' far too often',
-						' every day',
-						' on occasion',
-						' when the time is right',
-						' when no one is watching',
-						' from time to time',
-						' whenever possible',
-						' just for fun',
-						' when in a mood'
-					])
+						'once in a while',
+						'far too often',
+						'several times a day',
+						'every night',
+						'in the middle of the night',
+						'several times a week',
+						'several times a month',
+						'several times a year',
+						'every day',
+						'every few days',
+						'once a week',
+						'every few weeks',
+						'once a month',
+						'every few months',
+						'once a year',
+						'every few years',
+						'on occasion',
+						'when the time is right',
+						'when no one is watching',
+						'from time to time',
+						'every now and then',
+						'whenever possible',
+						'just for fun',
+						'when in a mood',
+						'just to show off',
+						'for no particular reason',
+						'obsessively',
+						'all the time',
+						'to calm down',
+						'for work',
+						'on company time',
+						'in secret'
+					]);
 				}
-				
-				character += ` who ${someVerb}${freq}`
+
+				character += ` who ${someVerb} ${freq}`;
 		}
 	}
 
-	character = a(character);
-	return character;
+	return a(character);
 }
 
 // Generates an object with an adjective
@@ -210,7 +241,13 @@ async function makeObject(db, filter) {
 			'full of',
 			'containing',
 			'stuffed with',
-			'filled with'
+			'filled with',
+			'packed with',
+			'containing several',
+			'which once contained',
+			'meant to hold',
+			'crammed with',
+			'partially filled with'
 		]);
 		object = `${await makeGroup(db, 'container', filter)} ${holds} `;
 	}
@@ -227,18 +264,22 @@ async function makeObject(db, filter) {
 		'made mostly out of',
 		'made entirely of',
 		'covered in',
+		'coated in',
 		'decorated with',
 		'made of',
 		'made partly from',
+		'made from pure',
 		'apparantly made of',
 		'fashioned from',
 		'embellished with',
-		'made to resemble'
+		'adorned with',
+		'made to resemble',
+		'made from what appears to be',
+		'covered in what appears to be'
 	]);
 	if (roll(3) === 1) object += ` ${part} ${await makeMaterial(db, filter)}`;
 
-	object = a(object);
-	return object;
+	return a(object);
 }
 
 // Generates either a named location or a setting with adjective
@@ -295,21 +336,22 @@ async function makeTwist(db, filter) {
 		'All of a sudden,',
 		'At some point',
 		'Surprisingly,',
+		'Not surprisingly,',
 		'Things get exciting when',
 		'Things get interesting when',
 		'Trouble begins when',
 		'Everything calms down when',
-		'A solution is found when',
 		'A solution is needed when',
 		'A dillema arises when',
 		'To everyone\'s surprise,',
+		'To no one\'s surprise,',
 		'All of a sudden,',
 		'Unexpectedly,',
+		'As expected,',
 		'As one might expect,',
+		'Luckily,',
 		'Fortunately,',
 		'Unfortunately,',
-		'Not surprisingly,',
-		'As expected,',
 		'Nothing is ever the same again once',
 		'In the end,',
 		'For some reason,',
@@ -317,6 +359,14 @@ async function makeTwist(db, filter) {
 		'Goals are achieved when',
 		'Dreams are realized when',
 		'Dreams are shattered when',
+		'In a bizarre twist of fate,',
+		'Incidentally,',
+		'Ironically,',
+		'Somehow',
+		'Coincidentally,',
+		'Once again,',
+		'Through no fault of their own,',
+		'Against everyone\'s wishes,'
 	]);
 
 	let subject;
@@ -349,7 +399,7 @@ async function makeTwist(db, filter) {
 		'becomes hidden'
 	]);
 
-	return `${part1} ${subject} ${part2}.`
+	return `${part1} ${subject} ${part2}.`;
 }
 
 // Generates items to insert into modular template
@@ -386,7 +436,7 @@ async function template(db, filter) {
 		'The beginning takes place',
 		'The ending takes place',
 		'An important event occurs'
-	])
+	]);
 
 	// Time and place setting
 	let middle = '';
@@ -398,7 +448,7 @@ async function template(db, filter) {
 			middle = `${takesPlace} ${settingPrep} ${setting}.`;
 			break;
 		case 3:
-			middle = `${takesPlace} during ${period}.`
+			middle = `${takesPlace} during ${period}.`;
 	}
 
 	// Fills in template to create story
