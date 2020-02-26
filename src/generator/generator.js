@@ -186,7 +186,9 @@ async function makeCharacter(db, filter) {
 				}
 
 				let freq = '';
+				let spacer = '';
 				if (roll(2) === 1) {
+					spacer = ' ';
 					freq = getOne([
 						'once in a while',
 						'far too often',
@@ -223,7 +225,7 @@ async function makeCharacter(db, filter) {
 					]);
 				}
 
-				character += ` who ${someVerb} ${freq}`;
+				character += ` who ${someVerb}${spacer}${freq}`;
 		}
 	}
 
