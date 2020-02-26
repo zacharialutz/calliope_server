@@ -15,7 +15,7 @@ function getOne(arr) {
 
 // Turns 'a' into 'an' if input starts with a vowel
 function a(str) {
-	const edgeCases = ['uniq', 'one-'];
+	const edgeCases = ['uniq', 'one-', 'utop'];
 	const vowels = ['a', 'e', 'i', 'o', 'u'];
 	if (vowels.includes(str.charAt(0)) && !edgeCases.includes(str.slice(0, 4))) return `an ${str}`;
 	else return `a ${str}`;
